@@ -4,6 +4,11 @@
 
 [[ -z "$CB" ]] && echo "Sorry, your CB env variable is not set. Go set it to point to your CloudBoltSoftware/cloudbolt repo." && exit 1
 [[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
-[[ ! -f "$CB/appliances/docker/$1" ]] && echo "Sorry, the docker command you specified does not exist at $CB/appliances/docker/$1.sh" && exit 1
-
-$CB/appliances/docker/$1 ${@:2}
+if [[ -f "$CB/appliances/docker/$1" ]]; then
+  $CB/appliances/docker/$1 ${@:2}
+elif [[ -f "$CB/appliances/docker/$1.sh" ]]; then
+  $CB/appliances/docker/$1.sh ${@:2}
+else
+  echo "Sorry, the docker command you specified does not exist at $CB/appliances/docker/$1"
+  exit 1
+fi
