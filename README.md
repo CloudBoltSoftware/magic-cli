@@ -6,7 +6,7 @@ magic-cli exists to make it easy to create a set of tools that work together.  I
 Learn more about the origins of magic-cli in [The Joy of Internal Tools](https://medium.com/@SlackEng/4a1bb5fe905b), a post on the Slack Engineering blog.
 
 ## Customization
-Rename the `magic-cli` script to whatever you want — for example, if you happen to work for example.com, you might rename it to `example`. (If you want to keep any of the example commands that come with it, rename them to have that new name as a prefix — for example, rename `magic-cli-update` to `example-update`.)
+Rename the `c` script to whatever you want — for example, if you happen to work for example.com, you might rename it to `example`. (If you want to keep any of the example commands that come with it, rename them to have that new name as a prefix — for example, rename `c-update` to `example-update`.)
 
 Now, when you run `example`, it will look for executables in the same directory as itself which have filenames that begin with `example-`. If there's an executable called `example-build`, you could run it by typing `example build`.
 
@@ -29,13 +29,13 @@ You can also define any extra parameters that are required for the script with a
 ````
 
 ## Installation
-This repository includes a Makefile that will install `magic-cli` and all of its subcommands into `/usr/local/bin`:
+This repository includes a Makefile that will install `c` and all of its subcommands into `/usr/local/bin`:
 
 ````bash
 $ make install
 ````
 
-You can also use it to uninstall `magic-cli`:
+You can also use it to uninstall `c`:
 
 ````bash
 $ make uninstall
@@ -52,4 +52,4 @@ $ magic-cli update
 Updated tools to 01ec2ef (2016-03-30 16:20:30 -0700)
 ```
 
-`magic-cli-update` provides a starting point for you to use for your own updater. If you're hosting your tools in a git repository, customizing this script just entails modifying the `SOURCE_REPO` constant at the top of the file. If your needs are more complex, you can replace the `fetch_latest_code!` and `get_version_info` methods.
+`c-update` provides a starting point for you to use for your own updater. If you're hosting your tools in a git repository, customizing this script just entails modifying the `SOURCE_REPO` constant at the top of the file. If your needs are more complex, you can replace the `fetch_latest_code!` and `get_version_info` methods.

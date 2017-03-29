@@ -1,9 +1,10 @@
 #
-# To use this Makefile with your version of magic-cli, change the value of
+# To use this Makefile with your version of c, change the value of
 # PREFIX to whatever you have renamed the main command to.
 #
 
-PREFIX = magic-cli
+# PREFIX = c
+PREFIX = c
 
 #
 # Where to install the tools
