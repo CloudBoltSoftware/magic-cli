@@ -2,6 +2,9 @@
 # Continuous Integration (and Testing) commands.
 # @param help - Command to run, e.g. 'c ci help'.
 import re
+from xml.etree import ElementTree
+from xml.etree.ElementTree import tostring
+from cStringIO import StringIO
 
 import click
 import jenkins
@@ -43,7 +46,8 @@ def announce(message):
 def branch(branch_name, announce_channel, jenkins_channel,
            cit_back_to_normal_channel, cit_failure_channel, cit_noisy_channel,
            jenkins_hostname, jenkins_username, jenkins_password, jenkins_test_name,
-           cit_hostname, cit_username, cit_password):
+           cit_hostname, cit_username, cit_password,
+           slack_account, slack_username, slack_token):
     """Switch BranchCIT's branch and channels.
     
     ./c-ci branch --branch-name=acropolis --jenkins-channel=#acropolis
@@ -52,8 +56,10 @@ def branch(branch_name, announce_channel, jenkins_channel,
     if jenkins_test_name and (branch_name or jenkins_channel):
         server = jenkins.Jenkins('https://{}'.format(jenkins_hostname), username=jenkins_username, password=jenkins_password)
         config = server.get_job_config(jenkins_test_name)
-        config = re.sub('<room>.+</room>', '<room>{}</room>'.format(jenkins_channel), config)
-        config = re.sub('<name>.+</name>', '<name>{}</name>'.format(branch_name), config)
+        tree = ElementTree.parse(StringIO(str(config)))
+        tree.find('scm/branches/hudson.plugins.git.BranchSpec/name').text = branch_name
+        tree.find('publishers/jenkins.plugins.slack.SlackNotifier/room').text = jenkins_channel
+        config = tostring(tree.getroot())
         server.reconfig_job(jenkins_test_name, config)
         if branch_name:
             announce('Reconfigured branch for "{}" on Jenkins to: {}'.format(jenkins_test_name, branch_name))
