@@ -6,6 +6,7 @@ dockercmd=$1
 [[ -z "${dockercmd}" ]] && dockercmd="help"
 [[ -z "$CB" ]] && echo "Sorry, your CB env variable is not set. Go set it to point to your CloudBoltSoftware/cloudbolt repo." && exit 1
 [[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
+
 if [[ -f "$CB/appliances/docker/${dockercmd}" ]]; then
   $CB/appliances/docker/${dockercmd} ${@:2}
 elif [[ -f "$CB/appliances/docker/${dockercmd}.sh" ]]; then
