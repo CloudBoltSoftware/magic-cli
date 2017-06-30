@@ -1,0 +1,32 @@
+#!/bin/bash -e
+# Run an upgrader package on $MYCITS or .
+# Usage: c upgrade[ <latest_or_version_or_path>][ <target_server_ip>]
+
+if [[ -z "$1" ]]; then
+
+    # latest_or_version_or_path is not provided
+    echo "Upgrader package not specified, using 'latest'.'"
+    upgrader_file='latest'
+    server_to_upgrade="$MYCITS"
+
+else
+
+    # latest_or_version_or_path is provided, so use it
+    if [[ -d "/releases/$1" ]]; then
+        upgrader_file='/releases/$1/cloudbolt_upgrader_$1_*.tgz'
+    else
+        [[ ! -f "$1" ]] && echo "Sorry, the upgrader specified ($1) could not be found." && exit 1
+    fi
+
+    if [[ -z "$2" ]]; then
+        server_to_upgrade="$MYCITS"
+    else
+        server_to_upgrade="$2"
+    fi
+
+fi
+
+[[ -z "$CB" ]] && echo "Sorry, your CB env variable is not set. Go set it to point to your CloudBoltSoftware/cloudbolt repo." && exit 1
+[[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
+
+$CB/cloudbolt_installer/remote_cb_upgrade.sh $server_to_upgrade $upgrader_file
