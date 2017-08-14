@@ -1,0 +1,25 @@
+#!/bin/bash -e
+# Copy a public SSH key to an IP address
+# Usage: c setup-ssh <hostname_or_ip>[ <username>]
+#
+# Uses MYPUBKEY environment variable if set, else ~/.ssh/id_rsa.pub
+
+if [[ -z "$1" ]]; then
+    echo "Must provide a hostname or IP address."
+    exit 1
+else
+    host="$1"
+    if [[ -z "$2" ]]; then
+        username="root"
+    else
+        username="$2"
+    fi
+fi
+
+if [[ -z "${MYPUBKEY}" ]]; then
+    pubkey="~/.ssh/id_rsa.pub"
+else
+    pubkey="${MYPUBKEY}"
+fi
+
+ssh-copy-id -i ${pubkey} ${username}@${host}
