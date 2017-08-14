@@ -17,9 +17,11 @@ else
 fi
 
 if [[ -z "${MYPUBKEY}" ]]; then
-    pubkey="~/.ssh/id_rsa.pub"
+    pubkey="${HOME}/.ssh/id_rsa.pub"
 else
     pubkey="${MYPUBKEY}"
 fi
 
-ssh-copy-id -i ${pubkey} ${username}@${host}
+cmd="ssh-copy-id -i ${pubkey} ${username}@${host}"
+echo "About to run: ${cmd}"
+${cmd}
