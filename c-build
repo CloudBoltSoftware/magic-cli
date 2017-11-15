@@ -4,4 +4,6 @@
 [[ -z "$CB" ]] && echo "Sorry, your CB env variable is not set. Go set it to point to your CloudBoltSoftware/cloudbolt repo." && exit 1
 [[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
 
-$CB/cloudbolt_installer/build_up_and_in_packages.sh -d $CB/src/ -c
+cmd="$CB/cloudbolt_installer/build_up_and_in_packages.sh -d $CB/src/ -c"
+echo "Running: ${cmd}"
+${cmd}

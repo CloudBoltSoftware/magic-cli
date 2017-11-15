@@ -23,5 +23,5 @@ else
 fi
 
 cmd="ssh-copy-id -i ${pubkey} ${username}@${host}"
-echo "About to run: ${cmd}"
+echo "Running: ${cmd}"
 ${cmd}

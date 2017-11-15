@@ -31,5 +31,5 @@ fi
 [[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
 
 cmd="$CB/cloudbolt_installer/remote_cb_upgrade.sh $server_to_upgrade $upgrader_file"
-echo "Command that will be run: ${cmd}"
+echo "Running: ${cmd}"
 ${cmd}

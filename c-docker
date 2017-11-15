@@ -8,10 +8,13 @@ dockercmd=$1
 [[ ! -d $CB ]] && echo "Sorry, your CB env variable is set to '$CB', but that folder doesn't exist." && exit 1
 
 if [[ -f "$CB/appliances/docker/${dockercmd}" ]]; then
-  $CB/appliances/docker/${dockercmd} ${@:2}
+  cmd="$CB/appliances/docker/${dockercmd} ${@:2}"
 elif [[ -f "$CB/appliances/docker/${dockercmd}.sh" ]]; then
-  $CB/appliances/docker/${dockercmd}.sh ${@:2}
+  cmd="$CB/appliances/docker/${dockercmd}.sh ${@:2}"
 else
   echo "Sorry, the docker command you specified does not exist at $CB/appliances/docker/${dockercmd}"
   exit 1
 fi
+
+echo "Running: ${cmd}"
+${cmd}
