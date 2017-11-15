@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+import requests
+import click
+import pprint
+
+
+requests.packages.urllib3.disable_warnings()
+
+
+@click.group()
+def cli():
+    pass
+
+
+def get_usergroups(search, slack_token):
+    usergroups = requests.get('https://api.slack.com/api/usergroups.list', params={
+        'token': slack_token,
+        'include_count': True,
+        'include_disabled': True,
+        'include_users': True,
+    }).json().get('usergroups')
+
+    if search:
+        usergroups = [usergroup for usergroup in usergroups
+                      if (
+                          usergroup.get('handle').lower() == search.lower()
+                          or usergroup.get('id').lower() == search.lower()
+                          or search.lower() in (usergroup.get('name') or '').lower()
+                      )
+                      ]
+
+    return usergroups
+
+
+def get_users(search, slack_token):
+    users = requests.get('https://api.slack.com/api/users.list', params={
+        'token': slack_token,
+    }).json().get('members')
+
+    if search:
+        users = [user
+                 for user
+                 in users
+                 if (
+                     user.get('name').lower() == search.lower()
+                     or user.get('id').lower() == search.lower()
+                     or search.lower() in (user.get('real_name') or '').lower()
+                 )
+                 ]
+
+    return users
+
+
+def do_list_groups(search, slack_token):
+    usergroups = get_usergroups(search, slack_token)
+
+    print('SLACK USERGROUPS (usergroups.list)')
+    for usergroup in usergroups:
+        print(' {0:20} @{1:20} [{2}]'.format(
+            usergroup.get('name'),
+            usergroup.get('handle'),
+            usergroup.get('id')
+        ))
+
+
+@cli.command()
+@click.option('--search')
+@click.option('--slack-token', envvar='SLACK_TOKEN')
+def list_groups(search, slack_token):
+    return do_list_groups(search, slack_token)
+
+
+def do_list_users(search, slack_token):
+    users = get_users(search, slack_token)
+
+    print('SLACK USERS (users.list)')
+    for user in users:
+        print(' {0:25} @{1:20} [{2}]'.format(
+            user.get('real_name'),
+            user.get('name'),
+            user.get('id'),
+        ))
+
+@cli.command()
+@click.option('--search')
+@click.option('--slack-token', envvar='SLACK_TOKEN')
+def list_users(search, slack_token):
+    return do_list_users(search, slack_token)
+
+
+@cli.command()
+@click.argument('user')
+@click.argument('groups', nargs=-1)
+@click.option('--slack-token', envvar='SLACK_TOKEN')
+def add_to_group(user, groups, slack_token):
+    print('Setting up dev user: {}'.format(user))
+    slack_users = get_users(user, slack_token)
+    if len(slack_users) == 0:
+        print('Unable to find user matching search {}'.format(user))
+        return
+    if len(slack_users) > 1:
+        print('Found multiple users matching search. Refine your search.')
+        do_list_users(user, slack_token)
+        return
+    slack_user = slack_users[0]
+    print('Found user: {}'.format(slack_user.get('id')))
+
+    slack_usergroups = []
+    for group in groups:
+        found_group = get_usergroups(group, slack_token)
+        if len(found_group) == 0:
+            print('Unable to find group matching search {}'.format(group))
+            return
+        if len(found_group) > 1:
+            print('Found multiple groups matching search "{}". Refine your search.'.format(group))
+            do_list_groups(group, slack_token)
+            return
+        slack_usergroups.append(found_group[0])
+
+    for slack_group in slack_usergroups:
+        users = slack_group.get('users')
+        print('Modifying {} @{} [{}]'.format(slack_group.get('name'), slack_group.get('handle'), slack_group.get('id')))
+        print(' Existing member list is: {}'.format(', '.join(users)))
+        users.append(slack_user.get('id'))
+        response = requests.post('https://api.slack.com/api/usergroups.users.update', params={
+            'token': slack_token,
+            'usergroup': slack_group.get('id'),
+            'users': ','.join(users)
+        })
+        print(' New member list is: {}'.format(', '.join(response.json().get('usergroup').get('users'))))
+
+if __name__ == '__main__':
+    cli()
