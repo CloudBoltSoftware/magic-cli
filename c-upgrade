@@ -13,7 +13,7 @@ else
 
     # latest_or_version_or_path is provided, so use it
     if [[ -d "/releases/$1" ]]; then
-        upgrader_file='/releases/$1/cloudbolt_upgrader_$1_*.tgz'
+        upgrader_file="/releases/$1/cloudbolt_upgrader_$1_*.tgz"
     else
         [[ ! -f "$1" ]] && echo "Sorry, the upgrader specified ($1) could not be found." && exit 1
         upgrader_file="$1"
