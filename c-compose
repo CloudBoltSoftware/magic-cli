@@ -8,7 +8,8 @@ import subprocess
 import sys
 
 HOME = os.environ['HOME']
-DOCKER_COMPOSE_DIR = os.path.join(HOME, 'cloudbolt/appliances/docker-compose')
+CLOUDBOLT_DIR = os.environ.get('CB', os.path.join(HOME, 'cloudbolt'))
+DOCKER_COMPOSE_DIR = os.path.join(CLOUDBOLT_DIR, 'appliances/docker-compose')
 SCRIPTS_DIR = os.path.join(DOCKER_COMPOSE_DIR, 'scripts')
 
 executable = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
